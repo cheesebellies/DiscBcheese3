@@ -13,6 +13,7 @@ from pafys import pafy
 
 list_to_play = []
 paused = False
+queue = False
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -54,6 +55,7 @@ async def playa(ctx,url):
 async def play_the_list():
   global list_to_play
   global paused
+  global queue
   
   try:
 
@@ -64,7 +66,7 @@ async def play_the_list():
           url = list_to_play[0][0]
 
           voice = get(bot.voice_clients, guild=ctx.guild)
-          if voice.is_playing() == False and len(list_to_play) >= 2:
+          if queue == True and voice.is_playing() == False:
 
               await playa(list_to_play[0][1],list_to_play[0][0])
               del list_to_play[0]
@@ -79,7 +81,7 @@ async def play_the_list():
 
               await ctx.send(embed=embed)
 
-          elif len(list_to_play) == 1:
+          elif len(list_to_play) == 1 and queue == False:
               await playa(list_to_play[0][1],list_to_play[0][0])
               del list_to_play[0]
               ttl = await getitle(url)
@@ -138,6 +140,8 @@ async def get_id_ov(url):
 @bot.command(name="play",help="Plays the first Youtube result from the input you give. Usage:   -play [search here]   Example:   -play Never Gonna Give You Up",aliases=["p"])
 async def play(ctx,*args):
   global list_to_play
+  global queue
+  queue = False
   plyinp = ""
   inpvalid = True
   result = []
@@ -155,6 +159,7 @@ async def play(ctx,*args):
     vidurl = result[0][1]
 
     list_to_play = [[vidurl, ctx]]
+    
       
       
   
@@ -162,6 +167,8 @@ async def play(ctx,*args):
 @bot.command(name="search",help="Gets the top ten results for your search. Usage: -search [search here]  Example: -search Crab Rave",aliases=["s"])
 async def search(ctx,*args):
   global list_to_play
+  global queue
+  queue = False
   plyinp = ""
   inpvalid = True
   sresult = []
@@ -258,6 +265,7 @@ async def pburl(ctx,url):
 @bot.command(name="queue",help="usage: -queue")
 async def queue(ctx,*args):
   global list_to_play
+  global queue
   plyinp = ""
   inpvalid = True
   result = []
